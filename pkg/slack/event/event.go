@@ -53,13 +53,14 @@ func (e *Event) UnmarshalJSON(data []byte) error {
 }
 
 type MessageEvent struct {
-	Channel      string          `json:"channel"`
-	User         string          `json:"user"`
-	ParentUserID string          `json:"parent_user_id,omitempty"`
-	Text         string          `json:"text"`
-	Timestamp    slack.Timestamp `json:"ts"`
-	EventTs      slack.Timestamp `json:"event_ts"`
-	ChannelType  string          `json:"channel_type"`
+	Channel          string          `json:"channel"`
+	User             string          `json:"user"`
+	ParentUserID     string          `json:"parent_user_id,omitempty"`
+	Text             string          `json:"text"`
+	MessageTimestamp slack.Timestamp `json:"ts"`
+	EventTimestamp   slack.Timestamp `json:"event_ts"`
+	ThreadTimestamp  slack.Timestamp `json:"thread_ts"`
+	ChannelType      string          `json:"channel_type"`
 }
 
 type AssistantThreadContext struct {
