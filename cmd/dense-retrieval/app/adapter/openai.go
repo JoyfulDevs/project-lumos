@@ -6,7 +6,7 @@ import (
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
 
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval-service/app/service"
+	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/service"
 )
 
 var _ service.Embedder = (*OpenAIClient)(nil)

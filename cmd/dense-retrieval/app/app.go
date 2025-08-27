@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval-service/app/adapter"
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval-service/app/service"
+	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/adapter"
+	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/service"
 	"github.com/devafterdark/project-lumos/pkg/service/retrieval/passage/server"
 )
 
