@@ -66,7 +66,9 @@ func receiveEvent(conn *websocket.Conn) chan event.SocketEvent {
 	go func() {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			slog.Error("failed to read websocket message", slog.Any("error", err))
+			if !websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+				slog.Error("failed to read websocket message", slog.Any("error", err))
+			}
 			close(ch)
 			return
 		}
