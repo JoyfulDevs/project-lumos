@@ -67,7 +67,9 @@ class QdrantClient:
                     values=values
                 )
 
-                # 검색 수행 (timeout 제거 - Qdrant 버전 호환성 문제)
+                # 검색 수행
+                # Note: timeout 파라미터는 qdrant-client v1.7.0+ 에서만 지원됩니다.
+                # 이전 버전과의 호환성을 위해 timeout은 클라이언트 초기화 시 설정합니다.
                 results = self.client.search(
                     collection_name=collection_name,
                     query_vector=NamedSparseVector(

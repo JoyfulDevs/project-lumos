@@ -9,7 +9,7 @@ from concurrent import futures
 import grpc
 
 # 생성된 protobuf 경로 추가
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../gen/python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../../gen/python'))
 
 from retrieval.passage.v1 import service_pb2, service_pb2_grpc
 from app.service.service import PassageRetrievalService
@@ -74,11 +74,9 @@ class PassageRetrievalServicer(service_pb2_grpc.PassageRetrievalServiceServicer)
         except ValueError as e:
             logger.error(f"검색 검증 오류: {e}")
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, str(e))
-            return service_pb2.RetrieveResponse()  # abort 후 빈 응답 반환
         except Exception as e:
             logger.error(f"검색 오류: {e}", exc_info=True)
             context.abort(grpc.StatusCode.INTERNAL, str(e))
-            return service_pb2.RetrieveResponse()  # abort 후 빈 응답 반환
 
     def Health(self, request, context):
         """gRPC health check 구현"""

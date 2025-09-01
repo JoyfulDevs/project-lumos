@@ -8,7 +8,7 @@ import os
 import time
 
 # protobuf 경로 추가
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../gen/python'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../gen/python'))
 
 from retrieval.passage.v1 import service_pb2, service_pb2_grpc
 

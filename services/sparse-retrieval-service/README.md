@@ -9,7 +9,7 @@ BM42 기반 Sparse Vector 검색을 제공하는 gRPC 마이크로서비스입�
 ## 아키텍처
 
 ```
-sparse-retrieval-service/
+services/sparse-retrieval-service/
 ├── main.py                 # 서비스 진입점
 ├── app/
 │   ├── app.py             # 애플리케이션 초기화 및 설정
@@ -21,7 +21,14 @@ sparse-retrieval-service/
 │       └── server.py     # gRPC 서버
 ├── requirements.txt       # Python 의존성
 ├── Dockerfile            # Docker 이미지 빌드
-└── docker-compose.yml    # 로컬 개발 환경
+├── .dockerignore         # Docker 빌드 제외 파일
+├── .env.local            # 로컬 환경 설정
+├── .env.production       # 프로덕션 환경 설정
+├── pyproject.toml        # Python 프로젝트 설정
+├── .flake8               # Flake8 린터 설정
+├── .gitignore            # Git 제외 파일
+└── test/                 # 테스트 스크립트
+    └── test_service.py
 ```
 
 ## 주요 기능
