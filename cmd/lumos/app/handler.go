@@ -32,7 +32,8 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsA
 		// TODO: Implement thread context changed handling
 	case event.EventTypeMessage:
 		if e.OfMessage.User == e.OfMessage.ParentUserID {
-			// Ignore messages from the bot itself
+			// 봇의 메시지 기능을 사용하므로 ParentUserID는 봇의 ID 값을 가진다.
+			// 따라서 이벤트를 생성한 User와 비교해 봇이 스스로에게 응답하지 않도록 한다.
 			return
 		}
 		c := &chat.Chat{
