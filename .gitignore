@@ -30,6 +30,8 @@ go.work.sum
 # Editor/IDE
 # .idea/
 .vscode/
+.trunk/
+.tmp/
 
 # macOS
 .DS_Store
