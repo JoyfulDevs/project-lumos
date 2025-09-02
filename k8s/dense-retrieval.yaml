@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dense-retrieval-service
+  labels:
+    app.kubernetes.io/name: dense-retrieval
+    app.kubernetes.io/component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: dense-retrieval
+  ports:
+  - protocol: TCP
+    port: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dense-retrieval-deployment
+  labels:
+    app.kubernetes.io/name: dense-retrieval
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dense-retrieval
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: dense-retrieval
+    spec:
+      containers:
+      - name: dense-retrieval
+        image: dense-retrieval:latest
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 100m
+          limits:
+            memory: 128Mi
+            cpu: 300m
+        env:
+        - name: QDRANT_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: retrieval-configmap
+              key: qdrant-host
+        - name: EMBEDDING_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: retrieval-configmap
+              key: embedding-api-url
