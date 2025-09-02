@@ -39,7 +39,7 @@ func (h *Handler) HandleEventsAPI(ctx context.Context, payload *event.EventsAPIP
 		_, err := c.PostMessage(ctx, &slack.PostMessageRequest{
 			Channel:         ec.Event.OfMessage.Channel,
 			Text:            "You said: " + ec.Event.OfMessage.Text,
-			ThreadTimestamp: ec.Event.OfMessage.Timestamp,
+			ThreadTimestamp: ec.Event.OfMessage.ThreadTimestamp,
 		})
 		if err != nil {
 			slog.Warn("failed to post message", slog.String("channel", ec.Event.OfMessage.Channel), slog.Any("error", err))
