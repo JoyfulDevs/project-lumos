@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	issuev1 "github.com/devafterdark/project-lumos/gen/go/retrieval/issue/v1"
+	issuev1 "github.com/joyfuldevs/project-lumos/gen/go/retrieval/issue/v1"
 )
 
 // Client는 이슈 검색 서비스를 위한 클라이언트 API입니다.

@@ -13,8 +13,8 @@ import (
 	"github.com/openai/openai-go/option"
 	"github.com/spf13/cobra"
 
-	"github.com/devafterdark/project-lumos/cmd/prototype/app"
-	"github.com/devafterdark/project-lumos/pkg/jira"
+	"github.com/joyfuldevs/project-lumos/cmd/prototype/app"
+	"github.com/joyfuldevs/project-lumos/pkg/jira"
 )
 
 var (

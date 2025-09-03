@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/devafterdark/project-lumos/pkg/retry"
-	"github.com/devafterdark/project-lumos/pkg/slack"
-	"github.com/devafterdark/project-lumos/pkg/slack/bot"
-	"github.com/devafterdark/project-lumos/pkg/slack/event"
+	"github.com/joyfuldevs/project-lumos/pkg/retry"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/bot"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
 )
 
 type Handler struct {

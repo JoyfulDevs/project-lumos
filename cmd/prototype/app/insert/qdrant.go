@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/qdrant/go-client/qdrant"
 
-	"github.com/devafterdark/project-lumos/cmd/prototype/app"
+	"github.com/joyfuldevs/project-lumos/cmd/prototype/app"
 )
 
 func Insert(

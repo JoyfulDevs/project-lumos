@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package retrieval.issue.v1;
 
-option go_package = "github.com/devafterdark/project-lumos/proto/retrieval/issue/v1;issue";
+option go_package = "github.com/joyfuldevs/project-lumos/proto/retrieval/issue/v1;issue";
 
 // 이슈 검색 서비스.
 service IssueRetrievalService {

@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/devafterdark/project-lumos/pkg/slack"
-	"github.com/devafterdark/project-lumos/pkg/slack/bot"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/bot"
 )
 
 func Run() error {

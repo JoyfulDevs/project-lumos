@@ -3,7 +3,7 @@ package chain
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/cmd/lumos/app/chat"
+	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
 )
 
 type responseKeyType int

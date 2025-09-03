@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/devafterdark/project-lumos/pkg/jira"
+	"github.com/joyfuldevs/project-lumos/pkg/jira"
 )
 
 const (

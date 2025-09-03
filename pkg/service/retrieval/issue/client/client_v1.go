@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/gen/go/retrieval/issue/v1"
+	"github.com/joyfuldevs/project-lumos/gen/go/retrieval/issue/v1"
 )
 
 // RetrieveIssuesV1은 주어진 이슈 키 목록에 대한 이슈를 검색합니다.

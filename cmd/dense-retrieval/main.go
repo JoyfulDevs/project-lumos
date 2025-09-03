@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app"
+	"github.com/joyfuldevs/project-lumos/cmd/dense-retrieval/app"
 )
 
 func main() {

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package retrieval.passage.v1;
 
-option go_package = "github.com/devafterdark/project-lumos/proto/retrieval/passage/v1;passage";
+option go_package = "github.com/joyfuldevs/project-lumos/proto/retrieval/passage/v1;passage";
 
 // 패시지 검색 서비스.
 service PassageRetrievalService {

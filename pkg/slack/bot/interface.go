@@ -3,7 +3,7 @@ package bot
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/pkg/slack/event"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
 )
 
 type EventHandler interface {

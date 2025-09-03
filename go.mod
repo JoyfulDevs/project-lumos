@@ -1,4 +1,4 @@
-module github.com/devafterdark/project-lumos
+module github.com/joyfuldevs/project-lumos
 
 go 1.25.0
 

@@ -3,8 +3,8 @@ package chain
 import (
 	"log/slog"
 
-	"github.com/devafterdark/project-lumos/cmd/lumos/app/chat"
-	"github.com/devafterdark/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
 )
 
 func ResponseHandler() chat.HandlerFunc {

@@ -3,7 +3,7 @@ package event
 import (
 	"encoding/json"
 
-	"github.com/devafterdark/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
 )
 
 type EventType string

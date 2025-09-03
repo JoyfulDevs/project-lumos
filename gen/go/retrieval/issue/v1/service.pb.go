@@ -202,7 +202,7 @@ const file_retrieval_issue_v1_service_proto_rawDesc = "" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12\x1a\n" +
 	"\bcomments\x18\x04 \x03(\tR\bcomments2n\n" +
 	"\x15IssueRetrievalService\x12U\n" +
-	"\bRetrieve\x12#.retrieval.issue.v1.RetrieveRequest\x1a$.retrieval.issue.v1.RetrieveResponseBFZDgithub.com/devafterdark/project-lumos/proto/retrieval/issue/v1;issueb\x06proto3"
+	"\bRetrieve\x12#.retrieval.issue.v1.RetrieveRequest\x1a$.retrieval.issue.v1.RetrieveResponseBDZBgithub.com/joyfuldevs/project-lumos/proto/retrieval/issue/v1;issueb\x06proto3"
 
 var (
 	file_retrieval_issue_v1_service_proto_rawDescOnce sync.Once

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/devafterdark/project-lumos/pkg/slack/event"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
 )
 
 func TestUnmarshalSlackEvent(t *testing.T) {

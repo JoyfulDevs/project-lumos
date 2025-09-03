@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/gen/go/retrieval/passage/v1"
-	"github.com/devafterdark/project-lumos/pkg/service/retrieval/passage/server"
+	"github.com/joyfuldevs/project-lumos/gen/go/retrieval/passage/v1"
+	"github.com/joyfuldevs/project-lumos/pkg/service/retrieval/passage/server"
 )
 
 var _ server.ServiceV1 = (*Service)(nil)

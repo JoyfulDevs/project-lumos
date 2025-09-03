@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	passagev1 "github.com/devafterdark/project-lumos/gen/go/retrieval/passage/v1"
+	passagev1 "github.com/joyfuldevs/project-lumos/gen/go/retrieval/passage/v1"
 )
 
 type Server struct {

@@ -191,7 +191,7 @@ const file_retrieval_passage_v1_service_proto_rawDesc = "" +
 	"\x05score\x18\x01 \x01(\x02R\x05score\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\fR\acontent2t\n" +
 	"\x17PassageRetrievalService\x12Y\n" +
-	"\bRetrieve\x12%.retrieval.passage.v1.RetrieveRequest\x1a&.retrieval.passage.v1.RetrieveResponseBJZHgithub.com/devafterdark/project-lumos/proto/retrieval/passage/v1;passageb\x06proto3"
+	"\bRetrieve\x12%.retrieval.passage.v1.RetrieveRequest\x1a&.retrieval.passage.v1.RetrieveResponseBHZFgithub.com/joyfuldevs/project-lumos/proto/retrieval/passage/v1;passageb\x06proto3"
 
 var (
 	file_retrieval_passage_v1_service_proto_rawDescOnce sync.Once
