@@ -3,7 +3,7 @@ package chat
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
 )
 
 type Chat struct {

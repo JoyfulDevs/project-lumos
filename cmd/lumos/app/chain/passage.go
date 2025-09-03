@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/devafterdark/project-lumos/cmd/lumos/app/chat"
-	"github.com/devafterdark/project-lumos/gen/go/retrieval/passage/v1"
-	"github.com/devafterdark/project-lumos/pkg/service/retrieval/passage/client"
+	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
+	"github.com/joyfuldevs/project-lumos/gen/go/retrieval/passage/v1"
+	"github.com/joyfuldevs/project-lumos/pkg/service/retrieval/passage/client"
 )
 
 type Passage = passage.Passage

@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n retrieval/issue/v1/service.proto\x12\x12retrieval.issue.v1\"%\n\x0fRetrieveRequest\x12\x12\n\nissue_keys\x18\x01 \x03(\t\"=\n\x10RetrieveResponse\x12)\n\x06issues\x18\x01 \x03(\x0b\x32\x19.retrieval.issue.v1.Issue\"F\n\x05Issue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12\x10\n\x08\x63omments\x18\x04 \x03(\t2n\n\x15IssueRetrievalService\x12U\n\x08Retrieve\x12#.retrieval.issue.v1.RetrieveRequest\x1a$.retrieval.issue.v1.RetrieveResponseBFZDgithub.com/devafterdark/project-lumos/proto/retrieval/issue/v1;issueb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n retrieval/issue/v1/service.proto\x12\x12retrieval.issue.v1\"%\n\x0fRetrieveRequest\x12\x12\n\nissue_keys\x18\x01 \x03(\t\"=\n\x10RetrieveResponse\x12)\n\x06issues\x18\x01 \x03(\x0b\x32\x19.retrieval.issue.v1.Issue\"F\n\x05Issue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05title\x18\x02 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t\x12\x10\n\x08\x63omments\x18\x04 \x03(\t2n\n\x15IssueRetrievalService\x12U\n\x08Retrieve\x12#.retrieval.issue.v1.RetrieveRequest\x1a$.retrieval.issue.v1.RetrieveResponseBDZBgithub.com/joyfuldevs/project-lumos/proto/retrieval/issue/v1;issueb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'retrieval.issue.v1.service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'ZDgithub.com/devafterdark/project-lumos/proto/retrieval/issue/v1;issue'
+  _globals['DESCRIPTOR']._serialized_options = b'ZBgithub.com/joyfuldevs/project-lumos/proto/retrieval/issue/v1;issue'
   _globals['_RETRIEVEREQUEST']._serialized_start=56
   _globals['_RETRIEVEREQUEST']._serialized_end=93
   _globals['_RETRIEVERESPONSE']._serialized_start=95

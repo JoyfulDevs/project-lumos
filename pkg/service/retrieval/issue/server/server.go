@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	issuev1 "github.com/devafterdark/project-lumos/gen/go/retrieval/issue/v1"
+	issuev1 "github.com/joyfuldevs/project-lumos/gen/go/retrieval/issue/v1"
 )
 
 type Server struct {

@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	"github.com/devafterdark/project-lumos/gen/go/retrieval/issue/v1"
+	"github.com/joyfuldevs/project-lumos/gen/go/retrieval/issue/v1"
 )
 
 type ServiceV1 interface {

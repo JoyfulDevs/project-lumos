@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\"retrieval/passage/v1/service.proto\x12\x14retrieval.passage.v1\"/\n\x0fRetrieveRequest\x12\r\n\x05query\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\x05\"C\n\x10RetrieveResponse\x12/\n\x08passages\x18\x01 \x03(\x0b\x32\x1d.retrieval.passage.v1.Passage\")\n\x07Passage\x12\r\n\x05score\x18\x01 \x01(\x02\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x32t\n\x17PassageRetrievalService\x12Y\n\x08Retrieve\x12%.retrieval.passage.v1.RetrieveRequest\x1a&.retrieval.passage.v1.RetrieveResponseBJZHgithub.com/devafterdark/project-lumos/proto/retrieval/passage/v1;passageb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\"retrieval/passage/v1/service.proto\x12\x14retrieval.passage.v1\"/\n\x0fRetrieveRequest\x12\r\n\x05query\x18\x01 \x01(\t\x12\r\n\x05limit\x18\x02 \x01(\x05\"C\n\x10RetrieveResponse\x12/\n\x08passages\x18\x01 \x03(\x0b\x32\x1d.retrieval.passage.v1.Passage\")\n\x07Passage\x12\r\n\x05score\x18\x01 \x01(\x02\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x32t\n\x17PassageRetrievalService\x12Y\n\x08Retrieve\x12%.retrieval.passage.v1.RetrieveRequest\x1a&.retrieval.passage.v1.RetrieveResponseBHZFgithub.com/joyfuldevs/project-lumos/proto/retrieval/passage/v1;passageb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'retrieval.passage.v1.service_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'ZHgithub.com/devafterdark/project-lumos/proto/retrieval/passage/v1;passage'
+  _globals['DESCRIPTOR']._serialized_options = b'ZFgithub.com/joyfuldevs/project-lumos/proto/retrieval/passage/v1;passage'
   _globals['_RETRIEVEREQUEST']._serialized_start=60
   _globals['_RETRIEVEREQUEST']._serialized_end=107
   _globals['_RETRIEVERESPONSE']._serialized_start=109

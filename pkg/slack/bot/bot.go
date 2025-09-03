@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/devafterdark/project-lumos/pkg/slack/event"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
 )
 
 type Bot struct {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/qdrant/go-client/qdrant"
 
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/service"
+	"github.com/joyfuldevs/project-lumos/cmd/dense-retrieval/app/service"
 )
 
 var _ service.VectorRetriever = (*QdrantClient)(nil)

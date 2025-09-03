@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/devafterdark/project-lumos/pkg/retry"
+	"github.com/joyfuldevs/project-lumos/pkg/retry"
 )
 
 func TestDo(t *testing.T) {

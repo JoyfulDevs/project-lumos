@@ -7,9 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/adapter"
-	"github.com/devafterdark/project-lumos/cmd/dense-retrieval/app/service"
-	"github.com/devafterdark/project-lumos/pkg/service/retrieval/passage/server"
+	"github.com/joyfuldevs/project-lumos/cmd/dense-retrieval/app/adapter"
+	"github.com/joyfuldevs/project-lumos/cmd/dense-retrieval/app/service"
+	"github.com/joyfuldevs/project-lumos/pkg/service/retrieval/passage/server"
 )
 
 func Run() error {
