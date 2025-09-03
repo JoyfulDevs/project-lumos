@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lumos-deployment
+  labels:
+    app.kubernetes.io/name: lumos
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lumos
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: lumos
+    spec:
+      containers:
+      - name: lumos
+        image: lumos:latest
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 200m
+          limits:
+            memory: 256Mi
+            cpu: 500m
+        env:
+        - name: SLACK_APP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-secret
+              key: slack-app-token
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-secret
+              key: slack-bot-token
