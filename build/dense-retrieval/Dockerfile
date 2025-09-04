@@ -8,7 +8,7 @@ ENV GOARCH=amd64
 ENV CGO_ENABLED=0
 RUN go build -ldflags="-s -w" ./cmd/dense-retrieval
 
-FROM istio/distroless
+FROM gcr.io/distroless/static-debian12:nonroot
 
 COPY --from=builder /app/dense-retrieval /app/
 
