@@ -9,8 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    outputs:
-      version: ${{ steps.export.outputs.version }}
 
     strategy:
       matrix:
@@ -57,10 +55,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         push: true
-
-    - name: Export version
-      id: export
-      run: echo "version=${{ steps.meta.outputs.version }}" >> "$GITHUB_OUTPUT"
 
   release:
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
