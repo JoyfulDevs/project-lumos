@@ -3,7 +3,6 @@ package chain
 import (
 	"context"
 	"log/slog"
-	"net/http"
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
 	"github.com/joyfuldevs/project-lumos/pkg/slack"
@@ -22,11 +21,9 @@ func SlackClientFrom(ctx context.Context) *slack.Client {
 	return info
 }
 
-func WithSlackClientInit(handler chat.Handler, appToken, botToken string) chat.HandlerFunc {
+func WithSlackClientInit(handler chat.Handler, slackClient *slack.Client) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
-		slackClient := slack.NewClient(http.DefaultClient, appToken, botToken)
-
 		chat = chat.WithContext(WithSlackClient(ctx, slackClient))
 
 		handler.HandleChat(chat)

@@ -37,7 +37,7 @@ func Run() error {
 		return err
 	}
 
-	botHandler := NewBotHandler(appToken, botToken)
+	botHandler := NewBotHandler(c)
 	bot := bot.NewBot(botHandler)
 
 	return bot.Run(ctx, resp.URL)
