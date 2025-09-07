@@ -22,14 +22,8 @@ func Run() error {
 		return errors.New("SLACK_BOT_TOKEN is not set")
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sigs
-		cancel()
-	}()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	c := slack.NewClient(http.DefaultClient, appToken, botToken)
 	resp, err := c.OpenConnection(ctx)
