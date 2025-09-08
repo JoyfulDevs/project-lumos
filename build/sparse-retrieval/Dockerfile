@@ -36,15 +36,6 @@ COPY services/sparse-retrieval/ ./services/sparse-retrieval/
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONPATH=/app:/app/gen/python:/root/.local/lib/python3.13/site-packages
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    GRPC_PORT=50051 \
-    QDRANT_HOST=qdrant \
-    QDRANT_PORT=6333 \
-    COLLECTION_NAME=jira_bm42_full \
-    MAX_WORKERS=10
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import grpc; channel = grpc.insecure_channel('localhost:50051'); channel.close()" || exit 1
