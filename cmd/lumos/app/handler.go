@@ -6,16 +6,19 @@ import (
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chain"
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
 )
 
 type BotHandler struct {
+	slackClient *slack.Client
 	chatHandler chat.Handler
 }
 
-func NewBotHandler(appToken, botToken string) *BotHandler {
+func NewBotHandler(slackClient *slack.Client) *BotHandler {
 	return &BotHandler{
-		chatHandler: BuildChatHandlerChain(appToken, botToken),
+		slackClient: slackClient,
+		chatHandler: BuildChatHandlerChain(slackClient),
 	}
 }
 
@@ -27,7 +30,14 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsA
 	e := payload.OfEventCallback.Event
 	switch e.Type {
 	case event.EventTypeAssistantThreadStarted:
-		// TODO: Implement thread started handling
+		_, err := b.slackClient.PostMessage(ctx, &slack.PostMessageRequest{
+			Channel:         e.OfAssistantThreadStarted.AssistantThread.ChannelID,
+			Text:            "안녕하세요! 무엇을 도와드릴까요?",
+			ThreadTimestamp: e.OfAssistantThreadStarted.AssistantThread.ThreadTimestamp,
+		})
+		if err != nil {
+			slog.Error("failed to post message", slog.Any("error", err))
+		}
 	case event.EventTypeAssistantThreadContextChanged:
 		// TODO: Implement thread context changed handling
 	case event.EventTypeMessage:
@@ -48,7 +58,7 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsA
 	}
 }
 
-func BuildChatHandlerChain(appToken, botToken string) chat.Handler {
+func BuildChatHandlerChain(slackClient *slack.Client) chat.Handler {
 	handler := chain.ResponseHandler()
 
 	// 메시지 생성 핸들러 설정.
@@ -60,7 +70,7 @@ func BuildChatHandlerChain(appToken, botToken string) chat.Handler {
 	handler = chain.WithAssistantStatus(handler, "retrieving passages...")
 
 	// 슬랙 클라이언트 초기화 핸들러 설정.
-	handler = chain.WithSlackClientInit(handler, appToken, botToken)
+	handler = chain.WithSlackClientInit(handler, slackClient)
 
 	// 패닉 복구 핸들러 설정.
 	handler = chain.WithPanicRecovery(handler)
