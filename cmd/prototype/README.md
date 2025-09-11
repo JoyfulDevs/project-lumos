@@ -81,8 +81,9 @@ curl http://localhost:8080/v1/chat/completions \
 ## 프로토타입 테스트
 
 ```shell
-# 프로토타입 바이너리 생성
-make prototype
+# 프로토타입 바이너리 생성 (go-task 설치 필요)
+# 또는 go build -o ./bin/ ./cmd/prototype
+task build-prototype
 
 # 임베딩 모델을 사용해 Jira 이슈 정보를 벡터로 변환.
 ./bin/prototype embedding \
