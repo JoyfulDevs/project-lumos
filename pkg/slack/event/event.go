@@ -61,6 +61,11 @@ type MessageEvent struct {
 	EventTimestamp   slack.Timestamp `json:"event_ts"`
 	ThreadTimestamp  slack.Timestamp `json:"thread_ts"`
 	ChannelType      string          `json:"channel_type"`
+
+	// 봇 메시지 구분을 위한 필드들 추가
+	BotID    string `json:"bot_id,omitempty"`   // 봇 ID
+	Subtype  string `json:"subtype,omitempty"`  // 메시지 서브타입 (예: "bot_message")
+	Username string `json:"username,omitempty"` // 봇 사용자명
 }
 
 type AssistantThreadContext struct {
