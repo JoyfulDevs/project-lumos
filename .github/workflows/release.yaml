@@ -15,6 +15,7 @@ jobs:
         target:
         - lumos
         - dense-retrieval
+        - sparse-retrieval
 
     steps:
     # https://github.com/actions/checkout
