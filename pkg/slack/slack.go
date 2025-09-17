@@ -136,6 +136,32 @@ func (c *Client) AssistantSetSuggestedPrompts(
 	return result, nil
 }
 
+// Check authentication and get bot info.
+func (c *Client) AuthTest(ctx context.Context) (*AuthTestResponse, error) {
+	path := "auth.test"
+
+	r, err := c.newRequest(ctx, "POST", c.BotToken, path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := c.sendRequest(r)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &AuthTestResponse{}
+	if err := json.Unmarshal(data, result); err != nil {
+		return nil, err
+	}
+
+	if !result.OK || result.Error != "" {
+		return nil, errors.New(result.Error)
+	}
+
+	return result, nil
+}
+
 func (c *Client) newRequest(
 	ctx context.Context,
 	method string,

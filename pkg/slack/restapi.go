@@ -91,3 +91,13 @@ type AssistantSetSuggestedPromptsRequest struct {
 type AssistantSetSuggestedPromptsResponse struct {
 	APIResponse
 }
+
+type AuthTestResponse struct {
+	APIResponse
+
+	URL    string `json:"url"`
+	Team   string `json:"team"`
+	User   string `json:"user"`
+	TeamID string `json:"team_id"`
+	UserID string `json:"user_id"`
+}
