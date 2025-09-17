@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install Python dependencies
-COPY services/sparse-retrieval-service/requirements.txt .
+COPY services/sparse-retrieval/requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Stage 2: Final runtime image
@@ -30,20 +30,11 @@ COPY --from=deps-builder /root/.local /root/.local
 COPY gen/python ./gen/python
 
 # Copy application code
-COPY services/sparse-retrieval-service/ ./services/sparse-retrieval-service/
+COPY services/sparse-retrieval/ ./services/sparse-retrieval/
 
 # Make sure scripts are in PATH
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONPATH=/app:/app/gen/python:/root/.local/lib/python3.13/site-packages
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    GRPC_PORT=50051 \
-    QDRANT_HOST=qdrant \
-    QDRANT_PORT=6333 \
-    COLLECTION_NAME=jira_bm42_full \
-    MAX_WORKERS=10
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
@@ -53,4 +44,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 EXPOSE 50051
 
 # Run the service
-CMD ["python", "services/sparse-retrieval-service/main.py"]
+CMD ["python", "services/sparse-retrieval/main.py"]
