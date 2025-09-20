@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package feedback.v1;
+
+option go_package = "github.com/joyfuldevs/project-lumos/proto/feedback/v1;feedback";
+
+// 사용자로부터 받은 피드백을 처리하는 서비스.
+service FeedbackService {
+  rpc SubmitFeedback(SubmitFeedbackRequest) returns (SubmitFeedbackResponse);
+}
+
+enum FeedbackType {
+  FEEDBACK_TYPE_UNSPECIFIED = 0;
+  FEEDBACK_TYPE_GOOD = 1;
+  FEEDBACK_TYPE_BAD = 2;
+}
+
+// 사용자가 제출한 피드백 처리 요청 메시지.
+message SubmitFeedbackRequest {
+  FeedbackType type = 1;
+  repeated string thread = 2;
+}
+
+message SubmitFeedbackResponse {}
