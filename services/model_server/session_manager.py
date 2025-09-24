@@ -215,7 +215,8 @@ class SessionManager:
             print("💡 관리자에게 올바른 SSH 키를 요청하세요.")
             return False
         
-        os.chmod(ssh_key, 0o600)
+        if not sys.platform.startswith("win"):
+            os.chmod(ssh_key, 0o600)
         
         model_type = "임베딩" if model_info.get('embedding', True) else "생성"
         
