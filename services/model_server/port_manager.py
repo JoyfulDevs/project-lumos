@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-포트 관리 및 충돌 해결 모듈
+포트 관리 및 충돌 해결 모듈 - 모델 타입별 고정 포트 할당
 """
 import socket
 import subprocess
@@ -14,6 +14,12 @@ class PortManager:
     def __init__(self, config, ec2_manager):
         self.config = config
         self.ec2_manager = ec2_manager
+        
+        # 모델 타입별 고정 포트 설정
+        self.port_assignments = {
+            'embedding': 8080,  # 임베딩 모델은 8080 고정
+            'generation': 8081  # 생성 모델은 8081 고정
+        }
     
     def is_local_port_in_use(self, port):
         """로컬에서 포트가 사용 중인지 확인"""
@@ -62,56 +68,67 @@ class PortManager:
             print(f"포트 {port} 원격 확인 실패, 안전하게 사용중으로 간주")
             return True
     
-    def get_available_port(self, preferred_port=None, used_ports=None):
-        """실제로 사용 가능한 포트 찾기 (로컬 + 원격 확인)"""
-        base_port = preferred_port or self.config.get('base_port', 8080)
+    def get_assigned_port_for_model(self, model_info):
+        """모델 정보에 따라 할당된 포트 반환"""
+        is_embedding = model_info.get('embedding', True)
+        model_type = 'embedding' if is_embedding else 'generation'
+        return self.port_assignments[model_type]
+    
+    def check_port_availability(self, port, model_type, used_ports=None):
+        """특정 포트의 사용 가능성 확인"""
         used_ports = used_ports or set()
         
-        max_attempts = 100  # 무한루프 방지
-        attempts = 0
+        print(f"🔍 {model_type} 모델용 포트 {port} 사용 가능성 검사 중...")
         
-        # 1. 선호 포트부터 순차적으로 시도
-        port = base_port
-        while attempts < max_attempts:
-            print(f"🔍 포트 {port} 사용 가능성 검사 중...")
-            
-            # 1. 메모리상의 세션에서 사용 중인지 확인
-            if port in used_ports:
-                print(f"    포트 {port}: 메모리상 세션에서 사용중")
-                port += 1
-                attempts += 1
-                continue
-            
-            # 2. 로컬에서 포트 사용 가능한지 확인
-            if self.is_local_port_in_use(port):
-                print(f"    포트 {port}: 로컬에서 사용중")
-                port += 1
-                attempts += 1
-                continue
-            
-            # 3. EC2에서 포트 사용 중인지 확인
-            if self.check_remote_port_in_use(port):
-                print(f"    포트 {port}: EC2에서 사용중")
-                port += 1
-                attempts += 1
-                continue
-            
-            # 모든 검사를 통과한 포트 반환
-            print(f"   포트 {port}: 사용 가능!")
-            return port
+        # 1. 메모리상의 세션에서 사용 중인지 확인
+        if port in used_ports:
+            print(f"    포트 {port}: 메모리상 세션에서 사용중")
+            return False, "메모리상 세션에서 사용중"
         
-        # 순차 검색 실패 시 랜덤 포트 시도
-        print("⚠️ 순차 포트 검색 실패, 랜덤 포트 시도...")
-        for _ in range(20):
-            random_port = random.randint(8100, 8999)
-            if (random_port not in used_ports and 
-                not self.is_local_port_in_use(random_port) and 
-                not self.check_remote_port_in_use(random_port)):
-                print(f" 랜덤 포트 {random_port} 사용 가능!")
-                return random_port
+        # 2. 로컬에서 포트 사용 가능한지 확인
+        if self.is_local_port_in_use(port):
+            print(f"    포트 {port}: 로컬에서 사용중")
+            return False, "로컬에서 사용중"
         
-        # 모든 시도 실패
-        raise Exception(f"사용 가능한 포트를 찾을 수 없습니다 (시도한 범위: {base_port}~{port}, 랜덤 포트도 실패)")
+        # 3. EC2에서 포트 사용 중인지 확인
+        if self.check_remote_port_in_use(port):
+            print(f"    포트 {port}: EC2에서 사용중")
+            return False, "EC2에서 사용중"
+        
+        print(f"    포트 {port}: 사용 가능!")
+        return True, "사용 가능"
+    
+    def get_available_port(self, model_info, preferred_port=None, used_ports=None):
+        """모델 타입에 따른 고정 포트 할당 (포트 충돌 시 에러 반환)"""
+        used_ports = used_ports or set()
+        
+        # 모델 타입 확인
+        is_embedding = model_info.get('embedding', True)
+        model_type = 'embedding' if is_embedding else 'generation'
+        
+        # 할당된 포트 가져오기
+        assigned_port = self.get_assigned_port_for_model(model_info)
+        
+        # 사용자가 선호 포트를 지정한 경우 경고
+        if preferred_port and preferred_port != assigned_port:
+            print(f"⚠️ 경고: {model_type} 모델은 포트 {assigned_port}로 고정되어 있습니다.")
+            print(f"    요청된 포트 {preferred_port}는 무시되고 {assigned_port}를 사용합니다.")
+        
+        # 포트 사용 가능성 확인
+        is_available, reason = self.check_port_availability(assigned_port, model_type, used_ports)
+        
+        if is_available:
+            print(f"✅ {model_type} 모델용 포트 {assigned_port} 할당 완료")
+            return assigned_port
+        else:
+            # 포트가 사용 중인 경우 에러 발생
+            raise Exception(
+                f"❌ {model_type} 모델용 포트 {assigned_port}이 이미 사용 중입니다 ({reason})\n"
+                f"해결 방법:\n"
+                f"  1. 기존 {model_type} 모델 세션을 중지: python run_model_server.py stop-session <session_id>\n"
+                f"  2. 포트 강제 정리: python run_model_server.py kill-ports {assigned_port}\n"
+                f"  3. 포트 상태 확인: python run_model_server.py debug-ports"
+            )
     
     def show_remote_ports(self, public_ip):
         """EC2에서 사용 중인 포트들 표시"""
@@ -147,33 +164,40 @@ class PortManager:
     
     def debug_ports(self, active_sessions):
         """포트 상태 디버깅"""
-        print("\n🔍 포트 충돌 디버깅")
+        print("\n🔍 포트 충돌 디버깅 - 고정 포트 할당 방식")
         print("-" * 50)
         
-        # 1. 로컬 포트 8080-8090 확인
-        print("🔍 로컬 포트 상태:")
-        for port in range(8080, 8091):
+        # 모델 타입별 고정 포트 정보 표시
+        print("📋 모델 타입별 고정 포트 할당:")
+        for model_type, port in self.port_assignments.items():
+            print(f"   {model_type} 모델: 포트 {port}")
+        print()
+        
+        # 1. 할당된 포트들의 상태 확인
+        print("🔍 할당된 포트 상태:")
+        for model_type, port in self.port_assignments.items():
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
                     sock.settimeout(1)
                     result = sock.connect_ex(('localhost', port))
                     status = "🔴 사용중" if result == 0 else "🟢 사용가능"
-                    print(f"   포트 {port}: {status}")
+                    print(f"   포트 {port} ({model_type}): {status}")
             except:
-                print(f"   포트 {port}: ❓ 확인불가")
+                print(f"   포트 {port} ({model_type}): ❓ 확인불가")
         
         # 2. 메모리상 활성 세션
         print(f"\n🔍 메모리상 활성 세션: {len(active_sessions)}")
         for session_id, session in active_sessions.items():
-            print(f"   {session_id}: 포트 {session['port']}")
+            model_type = 'embedding' if session.get('model_info', {}).get('embedding', True) else 'generation'
+            print(f"   {session_id}: 포트 {session['port']} ({model_type})")
         
         # 3. EC2 원격 포트 확인
         state, public_ip = self.ec2_manager.get_instance_status()
         if state == 'running' and public_ip:
-            print(f"\n EC2 원격 포트 상태 ({public_ip}):")
+            print(f"\n🔌 EC2 원격 포트 상태 ({public_ip}):")
             self.show_remote_ports(public_ip)
         else:
-            print(f"\n EC2 상태: {state} (포트 확인 불가)")
+            print(f"\n🔌 EC2 상태: {state} (포트 확인 불가)")
     
     def kill_remote_ports(self, ports_to_kill):
         """EC2에서 특정 포트 범위의 프로세스 강제 종료"""
@@ -214,3 +238,11 @@ class PortManager:
         
         print("포트 정리 작업 완료")
         return True
+    
+    def show_port_assignment_info(self):
+        """포트 할당 정보 표시"""
+        print("\n📋 모델 타입별 포트 할당:")
+        print("-" * 30)
+        for model_type, port in self.port_assignments.items():
+            print(f"   {model_type.capitalize()} 모델: 포트 {port}")
+        print()

@@ -152,7 +152,7 @@ class ConfigManager:
             "aws_region": "us-east-1",
             "instance_id": "i-1234567890abcdef0",
             
-            "ssh_key_path": "./keys/server-key.pem",
+            "ssh_key_path": "./keys/yerin-linux.pem",
             "ec2_user": "ubuntu",
             
             "base_port": 8080,

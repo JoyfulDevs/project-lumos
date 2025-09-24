@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-다중 AI 빌드 서버 메인 실행 파일
+다중 AI 빌드 서버 메인 실행 파일 - 모델 타입별 고정 포트 할당
 """
 import sys
 import time
@@ -12,7 +12,10 @@ def kill_remote_ports():
     """EC2에서 특정 포트 범위의 프로세스 강제 종료"""
     if len(sys.argv) < 3:
         print("사용법: python run_model_server.py kill-ports <포트1> [포트2] [포트3]...")
-        print("예시: python run_model_server.py kill-ports 8080 8081 8082")
+        print("예시: python run_model_server.py kill-ports 8080 8081")
+        print("\n📋 기본 포트 할당:")
+        print("   임베딩 모델: 포트 8080")
+        print("   생성 모델: 포트 8081")
         return
     
     ports_to_kill = sys.argv[2:]
@@ -23,7 +26,7 @@ def kill_remote_ports():
         sys.exit(0 if success else 1)
         
     except Exception as e:
-        print(f" 포트 정리 실패: {e}")
+        print(f"❌ 포트 정리 실패: {e}")
         sys.exit(1)
 
 
@@ -31,40 +34,49 @@ def main():
     """메인 함수"""
     if len(sys.argv) < 2:
         print("""
-다중 AI 빌드 서버 제어 도구 (포트 충돌 해결)
+🚀 다중 AI 빌드 서버 제어 도구 (모델 타입별 고정 포트 할당)
+
+📋 포트 할당 방식:
+  - 임베딩 모델: 포트 8080 고정
+  - 생성 모델: 포트 8081 고정
+  - 같은 타입 모델은 동시에 1개만 실행 가능
 
 기본 명령어:
-  python run_model_server.py start [model_id] [--port N]  - 새 세션 시작
-  python run_model_server.py stop-session <id>           - 특정 세션 중지
-  python run_model_server.py stop-all                    - 모든 세션 중지
-  python run_model_server.py status                      - 전체 상태 확인
-  python run_model_server.py models                      - 사용 가능한 모델 목록
+  python run_model_server.py start [model_id]          - 새 세션 시작
+  python run_model_server.py stop-session <id>         - 특정 세션 중지
+  python run_model_server.py stop-all                  - 모든 세션 중지
+  python run_model_server.py status                    - 전체 상태 확인
+  python run_model_server.py models                    - 사용 가능한 모델 목록
 
 디버깅 명령어:
-  python run_model_server.py debug-ports                 - 포트 상태 디버깅
-  python run_model_server.py kill-ports 8080 8081       - 특정 포트 강제 정리
+  python run_model_server.py debug-ports               - 포트 상태 디버깅
+  python run_model_server.py kill-ports 8080 8081     - 특정 포트 강제 정리
 
 설정 관리:
-  python run_model_server.py add-model                   - 기존 config에 새 모델 추가
-  python run_model_server.py template                    - 다중 모델 템플릿 생성
+  python run_model_server.py add-model                 - 기존 config에 새 모델 추가
+  python run_model_server.py template                  - 다중 모델 템플릿 생성
 
 사용 예시:
-  python run_model_server.py start                       # 모델 선택 후 시작
-  python run_model_server.py start qwen3-embedding       # 특정 모델로 시작
-  python run_model_server.py start gpt-oss-20b --port 8085  # 특정 포트로 시작
-  python run_model_server.py debug-ports                 # 포트 충돌 디버깅
+  python run_model_server.py start                     # 모델 선택 후 시작
+  python run_model_server.py start qwen3-embedding     # 임베딩 모델 시작 (포트 8080)
+  python run_model_server.py start gpt-oss-20b         # 생성 모델 시작 (포트 8081)
+  python run_model_server.py debug-ports               # 포트 충돌 디버깅
 
-포트 충돌 해결 기능:
-  - 실제 포트 사용 상태 확인 (로컬 + EC2)
-  - 자동 포트 할당 (8080부터 순차 검색)
-  - 포트 사용 불가 시 랜덤 포트 할당
-  - 고유한 세션 ID 생성 (타임스탬프 포함)
+🔄 포트 충돌 해결:
+  - 같은 타입 모델 실행 시 기존 세션 자동 중지 선택 가능
+  - 포트 사용 불가 시 명확한 에러 메시지와 해결 방법 제시
+  - 강제 포트 정리 도구 제공
   
-개선된 기능:
-  - 포트 중복 사용 방지
+✨ 개선된 기능:
+  - 모델 타입별 포트 고정 할당 (임베딩: 8080, 생성: 8081)
+  - 포트 충돌 방지 및 명확한 에러 처리
   - 실시간 포트 상태 모니터링
-  - 강제 포트 정리 도구
   - 자세한 디버깅 정보
+  - 사용자 친화적인 충돌 해결 옵션
+
+⚠️ 주의사항:
+  - --port 옵션은 무시됩니다 (모델 타입별 고정 포트 사용)
+  - 같은 타입의 모델은 동시에 1개만 실행 가능합니다
         """)
         sys.exit(1)
     
@@ -89,7 +101,7 @@ def main():
     try:
         controller = MultiBuildServer()
     except Exception as e:
-        print(f" 초기화 실패: {e}")
+        print(f"❌ 초기화 실패: {e}")
         sys.exit(1)
     
     # 포트 디버깅
@@ -108,9 +120,10 @@ def main():
             if sys.argv[i] == '--port' and i + 1 < len(sys.argv):
                 try:
                     preferred_port = int(sys.argv[i + 1])
+                    print(f"⚠️ 경고: --port 옵션은 무시됩니다. 모델 타입별 고정 포트를 사용합니다.")
                     i += 2
                 except ValueError:
-                    print(" 잘못된 포트 번호입니다.")
+                    print("❌ 잘못된 포트 번호입니다.")
                     sys.exit(1)
             elif not model_id:
                 model_id = sys.argv[i]
@@ -120,8 +133,12 @@ def main():
         
         success = controller.start_session(model_id, preferred_port)
         if success:
-            print("\n 세션이 시작되었습니다!")
-            print("   - 다른 모델로 추가 세션을 시작하려면: python run_model_server.py start [model_id]")
+            print("\n✅ 세션이 시작되었습니다!")
+            print("📋 포트 할당 방식:")
+            print("   - 임베딩 모델: 포트 8080")
+            print("   - 생성 모델: 포트 8081")
+            print("\n💡 추가 작업:")
+            print("   - 다른 타입 모델 추가: python run_model_server.py start [model_id]")
             print("   - 상태 확인: python run_model_server.py status")
             print("   - 세션 중지: python run_model_server.py stop-session <session_id>")
             print("   - 포트 디버깅: python run_model_server.py debug-ports")
@@ -136,7 +153,7 @@ def main():
     
     elif command == 'stop-session':
         if len(sys.argv) < 3:
-            print(" 세션 ID를 입력해주세요: python run_model_server.py stop-session <session_id>")
+            print("❌ 세션 ID를 입력해주세요: python run_model_server.py stop-session <session_id>")
             controller.show_status()  # 현재 세션들 표시
             sys.exit(1)
         session_id = sys.argv[2]
@@ -154,8 +171,8 @@ def main():
         controller.list_models()
     
     else:
-        print(f" 알 수 없는 명령어: {command}")
-        print("python run_model_server.py 를 실행하여 도움말을 확인하세요.")
+        print(f"❌ 알 수 없는 명령어: {command}")
+        print("💡 python run_model_server.py 를 실행하여 도움말을 확인하세요.")
         sys.exit(1)
 
 
