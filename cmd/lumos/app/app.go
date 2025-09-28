@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/bot"
 )
 
@@ -25,7 +25,7 @@ func Run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	c := slack.NewClient(http.DefaultClient, appToken, botToken)
+	c := api.NewClient(http.DefaultClient, appToken, botToken)
 	resp, err := c.OpenConnection(ctx)
 	if err != nil {
 		return err

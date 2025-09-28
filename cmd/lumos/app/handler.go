@@ -6,31 +6,32 @@ import (
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chain"
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
-	"github.com/joyfuldevs/project-lumos/pkg/slack"
-	"github.com/joyfuldevs/project-lumos/pkg/slack/event"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/eventsapi"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/interactive"
 )
 
 type BotHandler struct {
-	slackClient *slack.Client
+	slackClient *api.Client
 	chatHandler chat.Handler
 }
 
-func NewBotHandler(slackClient *slack.Client) *BotHandler {
+func NewBotHandler(slackClient *api.Client) *BotHandler {
 	return &BotHandler{
 		slackClient: slackClient,
 		chatHandler: BuildChatHandlerChain(slackClient),
 	}
 }
 
-func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsAPIPayload) {
-	if payload.Type != event.EventsAPITypeEventCallback {
+func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Payload) {
+	if payload.Type != eventsapi.PayloadTypeEventCallback {
 		return
 	}
 
 	e := payload.OfEventCallback.Event
 	switch e.Type {
-	case event.EventTypeAssistantThreadStarted:
-		_, err := b.slackClient.PostMessage(ctx, &slack.PostMessageRequest{
+	case eventsapi.EventTypeAssistantThreadStarted:
+		_, err := b.slackClient.PostMessage(ctx, &api.PostMessageRequest{
 			Channel:         e.OfAssistantThreadStarted.AssistantThread.ChannelID,
 			Text:            "안녕하세요! 무엇을 도와드릴까요?",
 			ThreadTimestamp: e.OfAssistantThreadStarted.AssistantThread.ThreadTimestamp,
@@ -38,9 +39,9 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsA
 		if err != nil {
 			slog.Error("failed to post message", slog.Any("error", err))
 		}
-	case event.EventTypeAssistantThreadContextChanged:
+	case eventsapi.EventTypeAssistantThreadContextChanged:
 		// TODO: Implement thread context changed handling
-	case event.EventTypeMessage:
+	case eventsapi.EventTypeMessage:
 		if e.OfMessage.User == e.OfMessage.ParentUserID {
 			// 봇의 메시지 기능을 사용하므로 ParentUserID는 봇의 ID 값을 가진다.
 			// 따라서 이벤트를 생성한 User와 비교해 봇이 스스로에게 응답하지 않도록 한다.
@@ -58,7 +59,18 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *event.EventsA
 	}
 }
 
-func BuildChatHandlerChain(slackClient *slack.Client) chat.Handler {
+func (b *BotHandler) HandleInteractive(ctx context.Context, payload *interactive.Payload) {
+	switch payload.Type {
+	case interactive.PayloadTypeBlockActions:
+	case interactive.PayloadTypeMessageActions:
+	case interactive.PayloadTypeViewClosed:
+	case interactive.PayloadTypeViewSubmission:
+	default:
+		slog.Warn("unknown interactive payload", slog.String("type", string(payload.Type)))
+	}
+}
+
+func BuildChatHandlerChain(slackClient *api.Client) chat.Handler {
 	handler := chain.ResponseHandler()
 
 	// 메시지 생성 핸들러 설정.

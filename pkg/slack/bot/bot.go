@@ -3,7 +3,9 @@ package bot
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
+	"net"
 
 	"github.com/gorilla/websocket"
 
@@ -51,9 +53,15 @@ func (b *Bot) Run(ctx context.Context, url string) error {
 			case event.SocketEventTypeEventsAPI:
 				resp := map[string]any{"envelope_id": e.OfEventsAPI.EnvelopeID}
 				if err := conn.WriteJSON(resp); err != nil {
-					slog.Warn("failed to respond to events api", slog.Any("error", err))
+					slog.Warn("failed to respond events api", slog.Any("error", err))
 				}
 				b.handler.HandleEventsAPI(connCtx, e.OfEventsAPI.Payload)
+			case event.SocketEventTypeInteractive:
+				resp := map[string]any{"envelope_id": e.OfInteractive.EnvelopeID}
+				if err := conn.WriteJSON(resp); err != nil {
+					slog.Warn("failed to respond interactive", slog.Any("error", err))
+				}
+				b.handler.HandleInteractive(connCtx, e.OfInteractive.Payload)
 			default:
 				slog.Warn("received unknown event type", slog.String("raw", string(e.Raw)))
 			}
@@ -66,7 +74,7 @@ func receiveEvent(conn *websocket.Conn) chan event.SocketEvent {
 	go func() {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			if !websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+			if !errors.Is(err, net.ErrClosed) {
 				slog.Error("failed to read websocket message", slog.Any("error", err))
 			}
 			close(ch)

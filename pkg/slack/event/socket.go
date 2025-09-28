@@ -2,22 +2,27 @@ package event
 
 import (
 	"encoding/json"
+
+	"github.com/joyfuldevs/project-lumos/pkg/slack/eventsapi"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/interactive"
 )
 
 type SocketEventType string
 
 const (
-	SocketEventTypeHello      SocketEventType = "hello"
-	SocketEventTypeDisconnect SocketEventType = "disconnect"
-	SocketEventTypeEventsAPI  SocketEventType = "events_api"
+	SocketEventTypeHello       SocketEventType = "hello"
+	SocketEventTypeDisconnect  SocketEventType = "disconnect"
+	SocketEventTypeEventsAPI   SocketEventType = "events_api"
+	SocketEventTypeInteractive SocketEventType = "interactive"
 )
 
 type SocketEvent struct {
 	Type SocketEventType `json:"type"`
 
-	OfHello      *Hello      `json:"-"`
-	OfDisconnect *Disconnect `json:"-"`
-	OfEventsAPI  *EventsAPI  `json:"-"`
+	OfHello       *Hello       `json:"-"`
+	OfDisconnect  *Disconnect  `json:"-"`
+	OfEventsAPI   *EventsAPI   `json:"-"`
+	OfInteractive *Interactive `json:"-"`
 
 	Raw []byte `json:"-"`
 }
@@ -47,6 +52,11 @@ func (s *SocketEvent) UnmarshalJSON(data []byte) error {
 		if err := json.Unmarshal(data, s.OfEventsAPI); err != nil {
 			return err
 		}
+	case SocketEventTypeInteractive:
+		s.OfInteractive = &Interactive{}
+		if err := json.Unmarshal(data, s.OfInteractive); err != nil {
+			return err
+		}
 	}
 	s.Raw = data
 
@@ -62,4 +72,18 @@ type Hello struct {
 
 type Disconnect struct {
 	Reason string `json:"reason"`
+}
+
+type EventsAPI struct {
+	EnvelopeID             string             `json:"envelope_id"`
+	Payload                *eventsapi.Payload `json:"payload,omitempty"`
+	AcceptsResponsePayload bool               `json:"accepts_response_payload"`
+	RetryAttempt           int                `json:"retry_attempt"`
+	RetryReason            string             `json:"retry_reason"`
+}
+
+type Interactive struct {
+	EnvelopeID             string               `json:"envelope_id"`
+	Payload                *interactive.Payload `json:"payload,omitempty"`
+	AcceptsResponsePayload bool                 `json:"accepts_response_payload"`
 }

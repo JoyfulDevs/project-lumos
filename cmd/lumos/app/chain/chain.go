@@ -4,7 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
-	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
 )
 
 func ResponseHandler() chat.HandlerFunc {
@@ -21,7 +21,7 @@ func ResponseHandler() chat.HandlerFunc {
 			response = "답변을 생성하지 못했습니다."
 		}
 
-		_, err := client.PostMessage(ctx, &slack.PostMessageRequest{
+		_, err := client.PostMessage(ctx, &api.PostMessageRequest{
 			Channel:         chat.Channel,
 			Text:            response,
 			ThreadTimestamp: chat.Timestamp,

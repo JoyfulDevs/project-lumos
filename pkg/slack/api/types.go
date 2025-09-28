@@ -1,4 +1,9 @@
-package slack
+package api
+
+import (
+	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/blockkit"
+)
 
 type APIResponse struct {
 	OK    bool   `json:"ok"`
@@ -25,6 +30,8 @@ type PostMessageRequest struct {
 	Channel string `json:"channel"`
 	// How this field works and whether it is required depends on other fields you use in your API call.
 	Text string `json:"text,omitempty"`
+	// A JSON-based array of structured blocks, presented as a URL-encoded string.
+	Blocks []*blockkit.Block `json:"blocks,omitempty"`
 
 	// URL to an image to use as the icon for this message.
 	IconURL string `json:"icon_url,omitempty"`
@@ -45,7 +52,7 @@ type PostMessageRequest struct {
 	Parse MessageParseType `json:"parse,omitempty"`
 	// Provide another message's ts value to make this message a reply.
 	// Avoid using a reply's ts value. use its parent instead.
-	ThreadTimestamp Timestamp `json:"thread_ts,omitempty"`
+	ThreadTimestamp slack.Timestamp `json:"thread_ts,omitempty"`
 	// Used in conjunction with thread_ts and indicates whether reply should be made visible to everyone
 	// in the channel or conversation. Defaults to false.
 	ReplyBroadcast bool `json:"reply_broadcast,omitempty"`
@@ -60,14 +67,14 @@ type PostMessageRequest struct {
 type PostMessageResponse struct {
 	APIResponse
 
-	Channel   string    `json:"channel"`
-	Timestamp Timestamp `json:"ts"`
+	Channel   string          `json:"channel"`
+	Timestamp slack.Timestamp `json:"ts"`
 }
 
 type AssistantSetStatusRequest struct {
-	Channel         string    `json:"channel_id"`
-	ThreadTimestamp Timestamp `json:"thread_ts"`
-	Status          string    `json:"status"`
+	Channel         string          `json:"channel_id"`
+	ThreadTimestamp slack.Timestamp `json:"thread_ts"`
+	Status          string          `json:"status"`
 }
 
 type AssistantSetStatusResponse struct {
@@ -83,7 +90,7 @@ type SuggestedPrompt struct {
 
 type AssistantSetSuggestedPromptsRequest struct {
 	Channel         string            `json:"channel_id"`
-	ThreadTimestamp Timestamp         `json:"thread_ts"`
+	ThreadTimestamp slack.Timestamp   `json:"thread_ts"`
 	Title           string            `json:"title,omitempty"`
 	Prompts         []SuggestedPrompt `json:"prompts"`
 }
