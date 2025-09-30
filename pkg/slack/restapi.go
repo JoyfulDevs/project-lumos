@@ -26,6 +26,8 @@ type PostMessageRequest struct {
 	// How this field works and whether it is required depends on other fields you use in your API call.
 	Text string `json:"text,omitempty"`
 
+	Blocks []SlackBlock `json:"blocks,omitempty"`
+
 	// URL to an image to use as the icon for this message.
 	IconURL string `json:"icon_url,omitempty"`
 	// Emoji to use as the icon for this message. Overrides icon_url.
@@ -55,6 +57,38 @@ type PostMessageRequest struct {
 	UnfurlMedia bool `json:"unfurl_media,omitempty"`
 	// Set your bot's user name.
 	Username string `json:"username,omitempty"`
+}
+type SlackBlock struct {
+	Type      string             `json:"type"`
+	Text      *SlackText         `json:"text,omitempty"`
+	BlockID   string             `json:"block_id,omitempty"`
+	Elements  []any              `json:"elements,omitempty"`
+	Accessory *SlackBlockElement `json:"accessory,omitempty"`
+}
+
+type SlackText struct {
+	Type  string `json:"type"` // "plain_text" 또는 "mrkdwn"
+	Text  string `json:"text"`
+	Emoji *bool  `json:"emoji,omitempty"`
+}
+
+// SlackBlockElement는 Slack 블록 요소를 나타냅니다
+type SlackBlockElement struct {
+	Type     string     `json:"type"`
+	Text     *SlackText `json:"text,omitempty"`
+	Style    string     `json:"style,omitempty"`
+	Value    string     `json:"value,omitempty"`
+	ActionID string     `json:"action_id,omitempty"`
+	URL      string     `json:"url,omitempty"`
+}
+
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
+type SlackContextElement struct {
+	Type string `json:"type"` // "mrkdwn" 또는 "plain_text"
+	Text string `json:"text"`
 }
 
 type PostMessageResponse struct {
