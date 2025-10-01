@@ -61,6 +61,7 @@ type MessageEvent struct {
 	EventTimestamp   slack.Timestamp `json:"event_ts"`
 	ThreadTimestamp  slack.Timestamp `json:"thread_ts"`
 	ChannelType      string          `json:"channel_type"`
+	BotID            string          `json:"bot_id,omitempty"`
 }
 
 type AssistantThreadContext struct {
