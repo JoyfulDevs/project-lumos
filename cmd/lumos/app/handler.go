@@ -42,9 +42,8 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Pay
 	case eventsapi.EventTypeAssistantThreadContextChanged:
 		// TODO: Implement thread context changed handling
 	case eventsapi.EventTypeMessage:
-		if e.OfMessage.User == e.OfMessage.ParentUserID {
-			// 봇의 메시지 기능을 사용하므로 ParentUserID는 봇의 ID 값을 가진다.
-			// 따라서 이벤트를 생성한 User와 비교해 봇이 스스로에게 응답하지 않도록 한다.
+		if e.OfMessage.BotID != "" {
+			// 봇이 보낸 메시지는 무시한다.
 			return
 		}
 		c := &chat.Chat{
@@ -60,6 +59,7 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Pay
 }
 
 func (b *BotHandler) HandleInteractive(ctx context.Context, payload *interactive.Payload) {
+	// TODO: implement interactive handler
 	switch payload.Type {
 	case interactive.PayloadTypeBlockActions:
 	case interactive.PayloadTypeMessageActions:
