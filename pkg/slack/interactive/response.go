@@ -23,7 +23,7 @@ type ResponsePayload struct {
 	// 그렇지 않은 경우에는 메시지의 본문 텍스트가 됩니다.
 	//
 	// 이 필드는 블록 사용 시 필수 입력 사항은 아니지만 대체 문자열로 포함할 것을 권장합니다.
-	Text string `json:"text"`
+	Text string `json:"text,omitempty"`
 	// Block Kit 블록 배열입니다.
 	Blocks []*blockkit.Block `json:"blocks,omitempty"`
 	// 메시지를 스레드에 게시하려면 이 필드에 스레드 타임스탬프를 포함합니다.
