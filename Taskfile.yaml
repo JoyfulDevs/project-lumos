@@ -58,3 +58,10 @@ tasks:
     desc: "Clean build artifacts"
     cmds:
       - rm -rf ./bin
+
+  run-test-bot:
+    desc: "Run test bot"
+    dotenv:
+      - .env
+    cmds:
+      - go run ./cmd/test-bot

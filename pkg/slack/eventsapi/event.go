@@ -1,4 +1,4 @@
-package event
+package eventsapi
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ const (
 type Event struct {
 	Type EventType `json:"type"`
 
-	OfMessage                       *MessageEvent                       `json:"-"`
+	OfMessage                       *Message                            `json:"-"`
 	OfAssistantThreadStarted        *AssistantThreadStartedEvent        `json:"-"`
 	OfAssistantThreadContextChanged *AssistantThreadContextChangedEvent `json:"-"`
 }
@@ -33,7 +33,7 @@ func (e *Event) UnmarshalJSON(data []byte) error {
 	e.Type = raw.Type
 	switch raw.Type {
 	case EventTypeMessage:
-		e.OfMessage = &MessageEvent{}
+		e.OfMessage = &Message{}
 		if err := json.Unmarshal(data, e.OfMessage); err != nil {
 			return err
 		}
@@ -52,16 +52,16 @@ func (e *Event) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type MessageEvent struct {
+type Message struct {
 	Channel          string          `json:"channel"`
 	User             string          `json:"user"`
-	ParentUserID     string          `json:"parent_user_id,omitempty"`
+	ParentUserID     string          `json:"parent_user_id"`
 	Text             string          `json:"text"`
 	MessageTimestamp slack.Timestamp `json:"ts"`
 	EventTimestamp   slack.Timestamp `json:"event_ts"`
 	ThreadTimestamp  slack.Timestamp `json:"thread_ts"`
 	ChannelType      string          `json:"channel_type"`
-	BotID            string          `json:"bot_id,omitempty"`
+	BotID            string          `json:"bot_id"`
 }
 
 type AssistantThreadContext struct {

@@ -5,23 +5,23 @@ import (
 	"log/slog"
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
-	"github.com/joyfuldevs/project-lumos/pkg/slack"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
 )
 
 type slackClientKeyType int
 
 const slackClientKey slackClientKeyType = iota
 
-func WithSlackClient(parent context.Context, client *slack.Client) context.Context {
+func WithSlackClient(parent context.Context, client *api.Client) context.Context {
 	return context.WithValue(parent, slackClientKey, client)
 }
 
-func SlackClientFrom(ctx context.Context) *slack.Client {
-	info, _ := ctx.Value(slackClientKey).(*slack.Client)
+func SlackClientFrom(ctx context.Context) *api.Client {
+	info, _ := ctx.Value(slackClientKey).(*api.Client)
 	return info
 }
 
-func WithSlackClientInit(handler chat.Handler, slackClient *slack.Client) chat.HandlerFunc {
+func WithSlackClientInit(handler chat.Handler, slackClient *api.Client) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
 		chat = chat.WithContext(WithSlackClient(ctx, slackClient))
@@ -40,7 +40,7 @@ func WithAssistantStatus(handler chat.Handler, status string) chat.HandlerFunc {
 			return
 		}
 
-		_, err := slackClient.AssistantSetStatus(ctx, &slack.AssistantSetStatusRequest{
+		_, err := slackClient.AssistantSetStatus(ctx, &api.AssistantSetStatusRequest{
 			Channel:         chat.Channel,
 			ThreadTimestamp: chat.Timestamp,
 			Status:          status,

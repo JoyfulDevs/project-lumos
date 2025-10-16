@@ -17,3 +17,19 @@ const (
 	DM      ChannelType = "im"
 	GroupDM ChannelType = "mpim"
 )
+
+type User struct {
+	ID     string `json:"id,omitempty"`
+	TeamID string `json:"team_id,omitempty"`
+	Name   string `json:"username,omitempty"`
+}
+
+type Team struct {
+	ID     string `json:"id,omitempty"`
+	Domain string `json:"domain,omitempty"`
+}
+
+type Channel struct {
+	ID   string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+}

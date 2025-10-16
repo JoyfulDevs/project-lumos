@@ -1,4 +1,4 @@
-package slack
+package api
 
 import (
 	"bytes"
@@ -56,7 +56,10 @@ func (c *Client) OpenConnection(ctx context.Context) (*OpenConnectionResponse, e
 }
 
 // Sends a message to a channel.
-func (c *Client) PostMessage(ctx context.Context, req *PostMessageRequest) (*PostMessageResponse, error) {
+func (c *Client) PostMessage(
+	ctx context.Context,
+	req *PostMessageRequest,
+) (*PostMessageResponse, error) {
 	path := "chat.postMessage"
 
 	r, err := c.newRequest(ctx, "POST", c.BotToken, path, req)
@@ -82,7 +85,10 @@ func (c *Client) PostMessage(ctx context.Context, req *PostMessageRequest) (*Pos
 }
 
 // Set the status for an AI assistant thread.
-func (c *Client) AssistantSetStatus(ctx context.Context, req *AssistantSetStatusRequest) (*AssistantSetStatusResponse, error) {
+func (c *Client) AssistantSetStatus(
+	ctx context.Context,
+	req *AssistantSetStatusRequest,
+) (*AssistantSetStatusResponse, error) {
 	path := "assistant.threads.setStatus"
 
 	r, err := c.newRequest(ctx, "POST", c.BotToken, path, req)
