@@ -136,7 +136,9 @@ func (h *Handler) HandleInteractive(ctx context.Context, payload *interactive.Pa
 			slog.Error("failed to create request", slog.Any("error", err))
 			return
 		}
-		http.DefaultClient.Do(req)
+		if _, err := http.DefaultClient.Do(req); err != nil {
+			slog.Info("failed to send response", slog.Any("error", err))
+		}
 
 	case interactive.PayloadTypeMessageActions:
 		slog.Info("received message actions")
