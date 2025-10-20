@@ -17,11 +17,14 @@ import (
 	"github.com/joyfuldevs/project-lumos/pkg/slack/bot"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/eventsapi"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/interactive"
+	"github.com/joyfuldevs/project-lumos/pkg/storage"
 )
 
 type Handler struct {
-	appToken string
-	botToken string
+	appToken          string
+	botToken          string
+	feedbackStorage   *storage.S3Storage
+	conversationCache map[string]*storage.ConversationPair
 }
 
 func (h *Handler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Payload) {
@@ -42,14 +45,26 @@ func (h *Handler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Payloa
 
 		slog.Info("received message event", slog.String("text", ec.Event.OfMessage.Text))
 
+		// 대화 캐시에 사용자 메시지 저장
+		cacheKey := h.generateCacheKey(e.Channel, string(e.ThreadTimestamp))
+		if h.conversationCache[cacheKey] == nil {
+			h.conversationCache[cacheKey] = &storage.ConversationPair{
+				UserMessage: e,
+			}
+		}
+
 		c := api.NewClient(http.DefaultClient, h.appToken, h.botToken)
+		botResponse := "You said: " + ec.Event.OfMessage.Text
 		_, err := c.PostMessage(ctx, &api.PostMessageRequest{
 			Channel:         ec.Event.OfMessage.Channel,
-			Text:            "You said: " + ec.Event.OfMessage.Text,
+			Text:            botResponse,
 			ThreadTimestamp: ec.Event.OfMessage.ThreadTimestamp,
 		})
 		if err != nil {
 			slog.Warn("failed to post message", slog.String("channel", ec.Event.OfMessage.Channel), slog.Any("error", err))
+		} else {
+			// 봇 응답을 캐시에 저장
+			h.conversationCache[cacheKey].BotResponse = botResponse
 		}
 
 		blocks := []*blockkit.Block{
@@ -118,12 +133,59 @@ func (h *Handler) HandleInteractive(ctx context.Context, payload *interactive.Pa
 	switch payload.Type {
 	case interactive.PayloadTypeBlockActions:
 		slog.Info("received block actions")
+
+		// 피드백 수집 및 S3 저장
+		// 모든 가능한 캐시 키를 시도해서 대화를 찾음
+		var conversation *storage.ConversationPair
+		var foundCacheKey string
+
+		// 1. 채널 ID만으로 시도 (DM이나 스레드가 아닌 경우)
+		cacheKey1 := h.generateCacheKey(payload.OfBlockActions.Channel.ID, "")
+		if conv := h.conversationCache[cacheKey1]; conv != nil {
+			conversation = conv
+			foundCacheKey = cacheKey1
+		}
+
+		// 2. 캐시에서 해당 채널로 시작하는 키를 모두 찾아보기
+		if conversation == nil {
+			for key, conv := range h.conversationCache {
+				if len(key) > len(payload.OfBlockActions.Channel.ID) &&
+					key[:len(payload.OfBlockActions.Channel.ID)] == payload.OfBlockActions.Channel.ID {
+					conversation = conv
+					foundCacheKey = key
+					break
+				}
+			}
+		}
+
+		if conversation != nil && conversation.UserMessage != nil && conversation.BotResponse != "" {
+			if err := h.feedbackStorage.ProcessAndStoreFeedback(ctx, payload.OfBlockActions, conversation); err != nil {
+				slog.Error("failed to process feedback", slog.Any("error", err))
+			} else {
+				slog.Info("feedback processed successfully", slog.String("cache_key", foundCacheKey))
+			}
+		} else {
+			slog.Warn("conversation not found in cache",
+				slog.String("channel_id", payload.OfBlockActions.Channel.ID),
+				slog.String("tried_key", cacheKey1),
+				slog.Bool("conversation_exists", conversation != nil))
+
+			// 디버깅: 현재 캐시의 모든 키 출력
+			slog.Info("current cache contents:")
+			for key, conv := range h.conversationCache {
+				slog.Info("cache entry",
+					slog.String("key", key),
+					slog.Bool("has_user_message", conv.UserMessage != nil),
+					slog.Bool("has_bot_response", conv.BotResponse != ""))
+			}
+		}
+
 		for _, action := range payload.OfBlockActions.Actions {
 			slog.Info("action", slog.String("id", action.ActionID))
 		}
 		rp := &interactive.ResponsePayload{
 			ResponseType:    interactive.Ephemeral,
-			Text:            "Submitted!",
+			Text:            "Feedback recorded! Thank you.",
 			ReplaceOriginal: true,
 		}
 		body, err := json.Marshal(rp)
@@ -151,13 +213,29 @@ func (h *Handler) HandleInteractive(ctx context.Context, payload *interactive.Pa
 	}
 }
 
+func (h *Handler) generateCacheKey(channelID, threadTS string) string {
+	if threadTS == "" {
+		return channelID
+	}
+	return channelID + "_" + threadTS
+}
+
 func main() {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 
 	appToken := os.Getenv("SLACK_APP_TOKEN")
 	botToken := os.Getenv("SLACK_BOT_TOKEN")
-	if appToken == "" || botToken == "" {
-		slog.Error("SLACK_APP_TOKEN and SLACK_BOT_TOKEN must be set")
+	s3BucketName := os.Getenv("S3_BUCKET_NAME")
+
+	if appToken == "" || botToken == "" || s3BucketName == "" {
+		slog.Error("SLACK_APP_TOKEN, SLACK_BOT_TOKEN, and S3_BUCKET_NAME must be set")
+		return
+	}
+
+	// S3 스토리지 초기화
+	s3Storage, err := storage.NewS3Storage(s3BucketName)
+	if err != nil {
+		slog.Error("failed to initialize S3 storage", slog.Any("error", err))
 		return
 	}
 
@@ -175,7 +253,14 @@ func main() {
 		return
 	}
 
-	b := bot.NewBot(&Handler{appToken: appToken, botToken: botToken})
+	handler := &Handler{
+		appToken:          appToken,
+		botToken:          botToken,
+		feedbackStorage:   s3Storage,
+		conversationCache: make(map[string]*storage.ConversationPair),
+	}
+
+	b := bot.NewBot(handler)
 	if err := b.Run(ctx, resp.URL); err != nil {
 		slog.Error("failed to run bot", slog.Any("error", err))
 	}
