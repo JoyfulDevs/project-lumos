@@ -163,7 +163,11 @@ func (s *SyncService) saveIssues(issues []domain.Issue) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			slog.Warn("failed to close file", slog.Any("error", err))
+		}
+	}()
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")

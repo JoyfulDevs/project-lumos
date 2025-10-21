@@ -110,7 +110,11 @@ func (j *JiraClient) fetchPage(jql string, startAt int) ([]domain.Issue, error) 
 			time.Sleep(3 * time.Second)
 			continue
 		}
-		defer resp.Body.Close()
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				slog.Warn("failed to close response body", slog.Any("error", err))
+			}
+		}()
 
 		if resp.StatusCode != http.StatusOK {
 			slog.Warn("HTTP error",
