@@ -25,7 +25,8 @@ func Run() error {
 	if !ok {
 		return errors.New("EMBEDDING_API_URL is not set")
 	}
-	embedder := adapter.NewOpenAIClient(embeddingURL)
+	embeddingKey := os.Getenv("EMBEDDING_API_KEY")
+	embedder := adapter.NewOpenAIClient(embeddingURL, embeddingKey)
 
 	svc := service.NewService(retriever, embedder)
 

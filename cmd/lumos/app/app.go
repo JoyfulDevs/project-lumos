@@ -35,5 +35,4 @@ func Run() error {
 	bot := bot.NewBot(botHandler)
 
 	return bot.Run(ctx, resp.URL)
-
 }
