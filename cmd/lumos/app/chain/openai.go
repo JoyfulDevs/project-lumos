@@ -28,14 +28,11 @@ func WithChatClientInit(handler chat.Handler) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
 
-		baseURL, ok := os.LookupEnv("CHAT_API_URL")
+		baseURL, ok := os.LookupEnv("LLM_API_URL")
 		if !ok {
-			slog.Warn("CHAT_API_URL is not set")
+			slog.Warn("LLM_API_URL is not set")
 		}
-		key, ok := os.LookupEnv("CHAT_API_KEY")
-		if !ok {
-			slog.Warn("CHAT_API_KEY is not set")
-		}
+		key := os.Getenv("LLM_API_KEY")
 
 		chatClient := openai.NewClient(
 			option.WithBaseURL(baseURL),
