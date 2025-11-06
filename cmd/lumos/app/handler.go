@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/openai/openai-go"
+
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chain"
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
@@ -16,10 +18,12 @@ type BotHandler struct {
 	chatHandler chat.Handler
 }
 
-func NewBotHandler(slackClient *api.Client) *BotHandler {
+func NewBotHandler(slackClient *api.Client, openaiClient *openai.Client) *BotHandler {
+	handler := BuildChatHandlerChain(slackClient, openaiClient)
+
 	return &BotHandler{
 		slackClient: slackClient,
-		chatHandler: BuildChatHandlerChain(),
+		chatHandler: handler,
 	}
 }
 
@@ -39,11 +43,13 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Pay
 		if err != nil {
 			slog.Error("failed to post message", slog.Any("error", err))
 		}
+
 	case eventsapi.EventTypeAssistantThreadContextChanged:
 		// TODO: Implement thread context changed handling
+
 	case eventsapi.EventTypeMessage:
-		if e.OfMessage.BotID != "" {
-			// 봇이 보낸 메시지는 무시한다.
+		// 봇이 보낸 메시지는 무시한다.
+		if e.OfMessage.BotID != "" || e.OfMessage.User == "" {
 			return
 		}
 		c := &chat.Chat{
@@ -53,6 +59,7 @@ func (b *BotHandler) HandleEventsAPI(ctx context.Context, payload *eventsapi.Pay
 		}
 		c = c.WithContext(ctx)
 		b.chatHandler.HandleChat(c)
+
 	default:
 		slog.Warn("unknown event type", slog.String("type", string(e.Type)))
 	}
@@ -70,25 +77,24 @@ func (b *BotHandler) HandleInteractive(ctx context.Context, payload *interactive
 	}
 }
 
-func BuildChatHandlerChain() chat.Handler {
-	handler := chain.ResponseHandler()
+func BuildChatHandlerChain(slackClient *api.Client, openaiClient *openai.Client) chat.Handler {
+	handler := chain.ChatResponse()
 
 	// 메시지 생성 핸들러 설정.
-	handler = chain.WithResponseGeneration(handler)
-	handler = chain.WithAssistantStatus(handler, "generating response...")
+	handler = chain.ResponseGeneration(handler)
+	handler = chain.AssistantStatusUpdate(handler, "가 마법을 부리는 중...")
 
 	// 패시지 검색 핸들러 설정.
-	handler = chain.WithPassageRetrieval(handler)
-	handler = chain.WithAssistantStatus(handler, "retrieving passages...")
+	handler = chain.PassageRetrieval(handler)
+	handler = chain.AssistantStatusUpdate(handler, "가 주문을 외우는 중...")
 
-	// 챗 클라이언트 초기화 핸들러 설정.
-	handler = chain.WithChatClientInit(handler)
-
-	// 슬랙 클라이언트 초기화 핸들러 설정.
-	handler = chain.WithSlackClientInit(handler)
+	// OpenAI 클라이언트 초기화.
+	handler = chain.WithChatClientInit(handler, openaiClient)
+	// Slack 클라이언트 초기화.
+	handler = chain.WithSlackClientInit(handler, slackClient)
 
 	// 패닉 복구 핸들러 설정.
-	handler = chain.WithPanicRecovery(handler)
+	handler = chain.PanicRecovery(handler)
 
 	return handler
 }
