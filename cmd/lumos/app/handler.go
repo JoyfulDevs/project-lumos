@@ -19,7 +19,7 @@ type BotHandler struct {
 func NewBotHandler(slackClient *api.Client) *BotHandler {
 	return &BotHandler{
 		slackClient: slackClient,
-		chatHandler: BuildChatHandlerChain(slackClient),
+		chatHandler: BuildChatHandlerChain(),
 	}
 }
 
@@ -70,7 +70,7 @@ func (b *BotHandler) HandleInteractive(ctx context.Context, payload *interactive
 	}
 }
 
-func BuildChatHandlerChain(slackClient *api.Client) chat.Handler {
+func BuildChatHandlerChain() chat.Handler {
 	handler := chain.ResponseHandler()
 
 	// 메시지 생성 핸들러 설정.
@@ -81,8 +81,11 @@ func BuildChatHandlerChain(slackClient *api.Client) chat.Handler {
 	handler = chain.WithPassageRetrieval(handler)
 	handler = chain.WithAssistantStatus(handler, "retrieving passages...")
 
+	// 챗 클라이언트 초기화 핸들러 설정.
+	handler = chain.WithChatClientInit(handler)
+
 	// 슬랙 클라이언트 초기화 핸들러 설정.
-	handler = chain.WithSlackClientInit(handler, slackClient)
+	handler = chain.WithSlackClientInit(handler)
 
 	// 패닉 복구 핸들러 설정.
 	handler = chain.WithPanicRecovery(handler)

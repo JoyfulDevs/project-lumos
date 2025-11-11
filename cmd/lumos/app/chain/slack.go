@@ -3,6 +3,8 @@ package chain
 import (
 	"context"
 	"log/slog"
+	"net/http"
+	"os"
 
 	"github.com/joyfuldevs/project-lumos/cmd/lumos/app/chat"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
@@ -21,9 +23,20 @@ func SlackClientFrom(ctx context.Context) *api.Client {
 	return info
 }
 
-func WithSlackClientInit(handler chat.Handler, slackClient *api.Client) chat.HandlerFunc {
+func WithSlackClientInit(handler chat.Handler) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
+
+		appToken, ok := os.LookupEnv("SLACK_APP_TOKEN")
+		if !ok {
+			slog.Warn("SLACK_APP_TOKEN is not set")
+		}
+		botToken, ok := os.LookupEnv("SLACK_BOT_TOKEN")
+		if !ok {
+			slog.Warn("SLACK_BOT_TOKEN is not set")
+		}
+
+		slackClient := api.NewClient(http.DefaultClient, appToken, botToken)
 		chat = chat.WithContext(WithSlackClient(ctx, slackClient))
 
 		handler.HandleChat(chat)

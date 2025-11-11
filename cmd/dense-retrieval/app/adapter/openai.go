@@ -15,9 +15,10 @@ type OpenAIClient struct {
 	client *openai.Client
 }
 
-func NewOpenAIClient(baseURL string) *OpenAIClient {
+func NewOpenAIClient(baseURL string, key string) *OpenAIClient {
 	client := openai.NewClient(
 		option.WithBaseURL(baseURL),
+		option.WithAPIKey(key),
 	)
 
 	return &OpenAIClient{client: &client}
