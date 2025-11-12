@@ -54,6 +54,11 @@ tasks:
     cmds:
       - go build -o ./bin/ ./cmd/collector
 
+  build-openai:
+    desc: "Build openai tool"
+    cmds:
+      - go build -o ./bin/ ./cmd/openai
+
   clean:
     desc: "Clean build artifacts"
     cmds:
