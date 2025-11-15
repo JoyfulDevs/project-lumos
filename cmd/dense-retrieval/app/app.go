@@ -21,11 +21,14 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	embeddingURL, ok := os.LookupEnv("EMBEDDING_API_URL")
+	embeddingURL, ok := os.LookupEnv("OPENAI_API_URL")
 	if !ok {
-		return errors.New("EMBEDDING_API_URL is not set")
+		return errors.New("OPENAI_API_URL is not set")
 	}
-	embeddingKey := os.Getenv("EMBEDDING_API_KEY")
+	embeddingKey, ok := os.LookupEnv("OPENAI_API_KEY")
+	if !ok {
+		return errors.New("OPENAI_API_KEY is not set")
+	}
 	embedder := adapter.NewOpenAIClient(embeddingURL, embeddingKey)
 
 	svc := service.NewService(retriever, embedder)

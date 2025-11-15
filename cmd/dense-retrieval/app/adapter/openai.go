@@ -29,6 +29,7 @@ func (o *OpenAIClient) Embed(ctx context.Context, text string) ([]float32, error
 		Input: openai.EmbeddingNewParamsInputUnion{
 			OfString: openai.String(text),
 		},
+		Model:          openai.EmbeddingModelTextEmbedding3Small,
 		EncodingFormat: openai.EmbeddingNewParamsEncodingFormatFloat,
 	})
 	if err != nil {

@@ -22,7 +22,7 @@ func ResponseFrom(ctx context.Context) string {
 	return info
 }
 
-func WithResponseGeneration(handler chat.Handler) chat.HandlerFunc {
+func ResponseGeneration(handler chat.Handler) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
 
@@ -71,6 +71,8 @@ func WithResponseGeneration(handler chat.Handler) chat.HandlerFunc {
 
 		resp, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 			Messages: messages,
+			Model:    "gpt-5",
+			TopP:     openai.Float(0.8),
 		})
 
 		if err != nil || len(resp.Choices) == 0 {
@@ -81,7 +83,6 @@ func WithResponseGeneration(handler chat.Handler) chat.HandlerFunc {
 		}
 
 		ctx = WithResponse(ctx, resp.Choices[0].Message.Content)
-
 		handler.HandleChat(chat.WithContext(ctx))
 	})
 }

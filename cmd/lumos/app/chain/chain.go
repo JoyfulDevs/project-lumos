@@ -7,7 +7,7 @@ import (
 	"github.com/joyfuldevs/project-lumos/pkg/slack/api"
 )
 
-func ResponseHandler() chat.HandlerFunc {
+func ChatResponse() chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
 		client := SlackClientFrom(ctx)
@@ -18,7 +18,7 @@ func ResponseHandler() chat.HandlerFunc {
 
 		response := ResponseFrom(ctx)
 		if response == "" {
-			response = "답변을 생성하지 못했습니다."
+			response = "답변을 생성하지 못했습니다.\n관리자에게 문의해주세요."
 		}
 
 		_, err := client.PostMessage(ctx, &api.PostMessageRequest{
@@ -32,7 +32,7 @@ func ResponseHandler() chat.HandlerFunc {
 	})
 }
 
-func WithPanicRecovery(handler chat.Handler) chat.HandlerFunc {
+func PanicRecovery(handler chat.Handler) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		defer func() {
 			if r := recover(); r != nil {
