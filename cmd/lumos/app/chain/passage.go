@@ -24,7 +24,7 @@ func PassagesFrom(ctx context.Context) []*Passage {
 	return info
 }
 
-func WithPassageRetrieval(handler chat.Handler) chat.HandlerFunc {
+func PassageRetrieval(handler chat.Handler) chat.HandlerFunc {
 	return chat.HandlerFunc(func(chat *chat.Chat) {
 		ctx := chat.Context()
 
