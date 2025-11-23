@@ -142,6 +142,35 @@ func (c *Client) AssistantSetSuggestedPrompts(
 	return result, nil
 }
 
+// Fetches a conversation's history of messages and events.
+func (c *Client) ConversationsHistory(
+	ctx context.Context,
+	req *ConversationsHistoryRequest,
+) (*ConversationsHistoryResponse, error) {
+	path := "conversations.history"
+
+	r, err := c.newRequest(ctx, "POST", c.BotToken, path, req)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := c.sendRequest(r)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &ConversationsHistoryResponse{}
+	if err := json.Unmarshal(data, result); err != nil {
+		return nil, err
+	}
+
+	if !result.OK || result.Error != "" {
+		return nil, errors.New(result.Error)
+	}
+
+	return result, nil
+}
+
 func (c *Client) newRequest(
 	ctx context.Context,
 	method string,

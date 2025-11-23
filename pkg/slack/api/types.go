@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/joyfuldevs/project-lumos/pkg/slack"
 	"github.com/joyfuldevs/project-lumos/pkg/slack/blockkit"
+	"github.com/joyfuldevs/project-lumos/pkg/slack/eventsapi"
 )
 
 type APIResponse struct {
@@ -97,4 +98,34 @@ type AssistantSetSuggestedPromptsRequest struct {
 
 type AssistantSetSuggestedPromptsResponse struct {
 	APIResponse
+}
+
+// ConversationsHistory API 요청
+type ConversationsHistoryRequest struct {
+	// Channel ID to fetch history for
+	Channel string `json:"channel"`
+	// End of time range of messages to include in results.
+	Latest slack.Timestamp `json:"latest,omitempty"`
+	// Start of time range of messages to include in results.
+	Oldest slack.Timestamp `json:"oldest,omitempty"`
+	// Include messages with latest or oldest timestamp in results only when either timestamp is specified.
+	Inclusive bool `json:"inclusive,omitempty"`
+	// The maximum number of items to return. Fewer than the requested number of items may be returned.
+	Limit int `json:"limit,omitempty"`
+	// Paginate through collections of data by setting the cursor parameter to a next_cursor attribute
+	Cursor string `json:"cursor,omitempty"`
+}
+
+// ConversationsHistory API 응답
+type ConversationsHistoryResponse struct {
+	APIResponse
+
+	// Array of message objects
+	Messages []*eventsapi.Message `json:"messages"`
+	// Whether there are more items to be retrieved
+	HasMore bool `json:"has_more"`
+	// Used for pagination
+	ResponseMetadata struct {
+		NextCursor string `json:"next_cursor,omitempty"`
+	} `json:"response_metadata,omitempty"`
 }
