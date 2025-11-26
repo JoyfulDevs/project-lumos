@@ -5,7 +5,7 @@ import logging
 import time
 from typing import List, Dict, Any, Optional, Tuple
 from qdrant_client import QdrantClient as QdrantClientBase
-from qdrant_client.models import SparseVector, NamedSparseVector
+from qdrant_client.models import SparseVector
 
 logger = logging.getLogger(__name__)
 
@@ -68,17 +68,15 @@ class QdrantClient:
                 )
 
                 # 검색 수행
-                # Note: timeout 파라미터는 qdrant-client v1.7.0+ 에서만 지원됩니다.
-                # 이전 버전과의 호환성을 위해 timeout은 클라이언트 초기화 시 설정합니다.
-                results = self.client.search(
+                # Note: qdrant-client v1.10.0+ 에서는 query_points를 사용합니다.
+                # v1.16.0+ 에서는 query 메서드 사용을 권장합니다.
+                results = self.client.query_points(
                     collection_name=collection_name,
-                    query_vector=NamedSparseVector(
-                        name="bm42",
-                        vector=sparse_vector
-                    ),
+                    query=sparse_vector,
+                    using="bm42",
                     limit=limit,
                     with_payload=True
-                )
+                ).points
 
                 # 결과 포맷팅
                 formatted_results = []
