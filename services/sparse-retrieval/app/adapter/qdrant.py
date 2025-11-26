@@ -68,8 +68,8 @@ class QdrantClient:
                 )
 
                 # 검색 수행
-                # Note: qdrant-client v1.10.0+ 에서는 query_points를 사용합니다.
-                # v1.16.0+ 에서는 query 메서드 사용을 권장합니다.
+                # Note: qdrant-client v1.10.0+에서 search()가 deprecated되어 query_points() 사용
+                # query_points()는 이미 임베딩된 벡터를 받고, query()는 텍스트를 받아 내부 임베딩 수행
                 results = self.client.query_points(
                     collection_name=collection_name,
                     query=sparse_vector,
