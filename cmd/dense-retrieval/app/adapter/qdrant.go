@@ -30,7 +30,7 @@ func NewQdrantClient(host string) (*QdrantClient, error) {
 func (q *QdrantClient) Retrieve(ctx context.Context, params service.RetrieveParams) ([]service.RetrieveResult, error) {
 	limit := uint64(params.Limit)
 	resp, err := q.client.Query(ctx, &qdrant.QueryPoints{
-		CollectionName: "content",
+		CollectionName: "small-jira-content",
 		Query:          qdrant.NewQuery(params.Vectors...),
 		Limit:          &limit,
 		WithPayload:    qdrant.NewWithPayload(true),

@@ -72,7 +72,6 @@ func ResponseGeneration(handler chat.Handler) chat.HandlerFunc {
 		resp, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 			Messages: messages,
 			Model:    "gpt-5",
-			TopP:     openai.Float(0.8),
 		})
 
 		if err != nil || len(resp.Choices) == 0 {
