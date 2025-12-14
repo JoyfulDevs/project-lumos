@@ -95,8 +95,8 @@ func (q *QdrantClient) Retrieve(ctx context.Context, params service.RetrievePara
 		}
 	})
 
-	for _, key := range keys[:limit] {
-		value := passages[key]
+	for i := range max(int(params.Limit), len(keys)) {
+		value := passages[keys[i]]
 		data, err := json.Marshal(value)
 		if err != nil {
 			slog.Warn("failed to marshal payload", "error", err)
