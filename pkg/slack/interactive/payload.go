@@ -80,7 +80,18 @@ type BlockActionsPayload struct {
 	// Contains data from the specific interactive component that was used.
 	// App surfaces can contain blocks with multiple interactive components,
 	// and each of those components can have multiple values selected by users.
-	Actions []Action `json:"actions,omitempty"`
+	Actions   []Action `json:"actions,omitempty"`
+	MessageTS string   `json:"message_ts,omitempty"`
+
+	Container struct {
+		ThreadTS  string `json:"thread_ts,omitempty"`
+		MessageTS string `json:"message_ts,omitempty"`
+	} `json:"container,omitempty"`
+
+	Message struct {
+		ThreadTS string `json:"thread_ts,omitempty"`
+		TS       string `json:"ts,omitempty"`
+	} `json:"message,omitempty"`
 }
 
 // Received when an app action in the message menu is used.
